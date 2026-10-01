@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- This tag makes the page scale correctly on phones -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sprout & Crumb — Vegan Bakery</title>
+
+  <style>
+    /* ─────────────────────────────────────────
+       RESET & BASE
+       Remove browser default spacing and set
+       a consistent font and colour across the page
+    ───────────────────────────────────────── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      /* Smooth scrolling when a nav link is clicked */
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #2d2d2d;
+      background: #ffffff;
+    }
+
+    /* Handy helper — limits content width and centres it */
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ─────────────────────────────────────────
+       COLOUR TOKENS
+       Change these four values to restyle the
+       whole page at once
+    ───────────────────────────────────────── */
+    :root {
+      --green:       #4a7c59; /* soft sage green — main brand colour */
+      --green-light: #eaf3ec; /* very pale sage for section backgrounds */
+      --tan:         #f2f7f4; /* cool off-white with a green tint */
+      --text-muted:  #6b7c70; /* muted green-grey for captions */
+    }
+
+    /* ─────────────────────────────────────────
+       NAVIGATION BAR
+       Sits at the top of every screen
+    ───────────────────────────────────────── */
+    /* ─────────────────────────────────────────
+       TODAY'S SPECIAL BANNER
+       Sits above the nav bar.
+       Edit the text inside the <div> in the HTML
+       below to change what the special is.
+    ───────────────────────────────────────── */
+    #todays-special {
+      background: #d4e9d8; /* soft green banner background */
+      color: #2d4f35;      /* dark green text for readability */
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    #todays-special strong {
+      font-weight: 700;
+    }
+
+    nav {
+      background: #fff;
+      border-bottom: 2px solid var(--green-light);
+      position: sticky; /* stays at the top as you scroll */
+      top: 0;
+      z-index: 100;
+    }
+
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      padding-bottom: 14px;
+    }
+
+    /* Bakery name in the nav */
+    .nav-logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--green);
+      text-decoration: none;
+    }
+
+    /* The three nav links */
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 24px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #2d2d2d;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover {
+      color: var(--green);
+    }
+
+    /* On narrow phones, stack the nav links below the logo */
+    @media (max-width: 480px) {
+      nav .container {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+      }
+      .nav-links {
+        gap: 16px;
+      }
+    }
+
+    /* ─────────────────────────────────────────
+       HERO SECTION
+       Big welcome area at the top of the page
+    ───────────────────────────────────────── */
+    #hero {
+      background-color: var(--tan);
+      /* Unsplash placeholder — replace with a real photo */
+      background-image: url('https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&auto=format&fit=crop&q=80');
+      background-size: cover;
+      background-position: center;
+      text-align: center;
+      padding: 100px 20px;
+      position: relative;
+    }
+
+    /* Dark overlay so white text is readable over any photo */
+    #hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.42);
+    }
+
+    /* Push hero text above the dark overlay */
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-content h1 {
+      font-size: clamp(2rem, 6vw, 3.2rem); /* scales between phones and desktops */
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .hero-content p {
+      font-size: 1.15rem;
+      color: #ececec;
+      margin-bottom: 28px;
+    }
+
+    /* Reusable button style */
+    .btn {
+      display: inline-block;
+      background: var(--green);
+      color: #fff;
+      padding: 14px 32px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #2f6637;
+    }
+
+    /* ─────────────────────────────────────────
+       SHARED SECTION STYLES
+       Every main section uses these rules
+    ───────────────────────────────────────── */
+    section {
+      padding: 64px 0;
+    }
+
+    /* Alternating background keeps sections visually separate */
+    section:nth-child(even) {
+      background: var(--green-light);
+    }
+
+    .section-title {
+      font-size: 1.75rem;
+      color: var(--green);
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    /* ─────────────────────────────────────────
+       MENU SECTION
+    ───────────────────────────────────────── */
+
+    /* Each category (Breads, Cakes, Pastries) */
+    .menu-category {
+      margin-bottom: 36px;
+    }
+
+    .menu-category h3 {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 6px;
+      margin-bottom: 16px;
+    }
+
+    /* Grid of item cards — one column on phones, two on wider screens */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    /* A single menu item card */
+    .menu-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .menu-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 6px;
+    }
+
+    .menu-card h4 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .menu-card .price {
+      font-weight: 700;
+      color: var(--green);
+      white-space: nowrap;
+    }
+
+    .menu-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    /* Small dietary tags e.g. GF, NF */
+    .tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      background: var(--green-light);
+      color: var(--green);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-weight: 600;
+    }
+
+    /* ─────────────────────────────────────────
+       OUR STORY SECTION
+    ───────────────────────────────────────── */
+    .story-layout {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      flex-wrap: wrap; /* wraps to a single column on phones */
+    }
+
+    .story-photo {
+      width: 240px;
+      height: 240px;
+      border-radius: 50%; /* circular photo */
+      object-fit: cover;
+      flex-shrink: 0;
+      /* centres the photo on phones when it wraps */
+      margin: 0 auto;
+    }
+
+    .story-text p {
+      margin-bottom: 14px;
+      color: #3d3d3d;
+    }
+
+    /* ─────────────────────────────────────────
+       PRE-ORDER FORM
+    ───────────────────────────────────────── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* two columns on wider screens */
+      gap: 20px;
+    }
+
+    /* Some fields should stretch across both columns */
+    .form-full {
+      grid-column: 1 / -1;
+    }
+
+    /* Each label + input pair */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #2d2d2d;
+    }
+
+    /* Mark required fields with a green star */
+    .form-group label .required {
+      color: var(--green);
+      margin-left: 3px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-family: inherit;
+      width: 100%;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: 2px solid var(--green);
+      border-color: var(--green);
+    }
+
+    /* Error message shown below a field when validation fails */
+    .error-msg {
+      font-size: 0.82rem;
+      color: #c0392b;
+      display: none; /* hidden until needed */
+    }
+
+    /* When a field has an error, show its message and colour the border red */
+    .form-group.has-error input,
+    .form-group.has-error textarea,
+    .form-group.has-error select {
+      border-color: #c0392b;
+    }
+
+    .form-group.has-error .error-msg {
+      display: block;
+    }
+
+    /* Submit button — full width */
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.05rem;
+      margin-top: 8px;
+    }
+
+    /* The thank-you box shown after a successful submission */
+    #thank-you {
+      display: none; /* hidden until the form is submitted */
+      background: var(--green-light);
+      border: 1px solid var(--green);
+      border-radius: 8px;
+      padding: 32px;
+      text-align: center;
+    }
+
+    #thank-you h3 {
+      color: var(--green);
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+
+    /* On phones, collapse the two-column form to one column */
+    @media (max-width: 560px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .form-full {
+        grid-column: 1;
+      }
+    }
+
+    /* ─────────────────────────────────────────
+       FOOTER
+    ───────────────────────────────────────── */
+    footer {
+      background: #1e1e1e;
+      color: #cccccc;
+      padding: 40px 0;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    footer strong {
+      color: #fff;
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    footer p {
+      margin-bottom: 6px;
+    }
+
+    footer .footer-note {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: #888;
+      border-top: 1px solid #333;
+      padding-top: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════
+       NAVIGATION BAR
+       Stays at the top as you scroll.
+       Each link jumps to its section via the id="#..." anchor.
+  ════════════════════════════════════════ -->
+  <!-- ═══════════════════════════════════════
+       TODAY'S SPECIAL BANNER
+       Change the text here whenever your special changes.
+       The whole line sits above the navigation bar.
+  ════════════════════════════════════════ -->
+  <div id="todays-special">
+    🌿 <strong>Today's Special:</strong> Cardamom &amp; Orange Blossom Cake — £20.00 &nbsp;·&nbsp; Pre-order yours below!
+  </div>
+
+  <nav>
+    <div class="container">
+      <a href="#hero" class="nav-logo">Sprout &amp; Crumb</a>
+      <ul class="nav-links">
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#story">Our Story</a></li>
+        <li><a href="#preorder">Pre-Order</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════
+       HERO SECTION
+       First thing visitors see — big photo,
+       bakery name, tagline, and a call to action.
+  ════════════════════════════════════════ -->
+  <section id="hero">
+    <div class="hero-content">
+      <h1>Sprout &amp; Crumb</h1>
+      <p>Freshly baked. Entirely plant-based.</p>
+      <!-- This button scrolls down to the pre-order form -->
+      <a href="#preorder" class="btn">Pre-Order Now</a>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       MENU SECTION
+       6 placeholder items across 3 categories.
+       Replace the names, descriptions, prices,
+       and tags with your real menu items.
+  ════════════════════════════════════════ -->
+  <section id="menu">
+    <div class="container">
+      <h2 class="section-title">Our Menu</h2>
+
+      <!-- Category: Breads -->
+      <div class="menu-category">
+        <h3>Breads</h3>
+        <div class="menu-grid">
+
+          <!-- Menu item 1 -->
+          <div class="menu-card">
+            <div class="menu-card-header">
+              <h4>Seeded Sourdough</h4>
+              <span class="price">£4.50</span>
+            </div>
+            <p>A slowly fermented loaf with sunflower and pumpkin seeds, crisp crust and a soft, chewy crumb.</p>
+            <div class="tags">
+              <span class="tag">Vegan</span>
+              <span class="tag">NF</span>
+            </div>
+          </div>
+
+          <!-- Menu item 2 -->
+          <div class="menu-card">
+            <div class="menu-card-header">
+              <h4>Rosemary Focaccia</h4>
+              <span class="price">£3.80</span>
+            </div>
+            <p>Light and pillowy with fresh rosemary, sea salt flakes, and a generous drizzle of olive oil.</p>
+            <div class="tags">
+              <span class="tag">Vegan</span>
+              <span class="tag">NF</span>
+            </div>
+          </div>
+
+        </div><!-- end .menu-grid -->
+      </div><!-- end Breads -->
+
+      <!-- Category: Cakes -->
+      <div class="menu-category">
+        <h3>Cakes</h3>
+        <div class="menu-grid">
+
+          <!-- Menu item 3 -->
+          <div class="menu-card">
+            <div class="menu-card-header">
+              <h4>Lemon &amp; Poppy Seed Loaf</h4>
+              <span class="price">£18.00</span>
+            </div>
+            <p>Zesty and moist, finished with a lemon drizzle glaze. Great for celebrations or gifting.</p>
+            <div class="tags">
+              <span class="tag">Vegan</span>
+              <span class="tag">NF</span>
+            </div>
+          </div>
+
+          <!-- Menu item 4 -->
+          <div class="menu-card">
+            <div class="menu-card-header">
+              <h4>Chocolate Fudge Cake</h4>
+              <span class="price">£22.00</span>
+            </div>
+            <p>Rich dark chocolate sponge layered with silky cashew cream frosting. 100% plant-based indulgence.</p>
+            <div class="tags">
+              <span class="tag">Vegan</span>
+              <span class="tag">GF</span>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- end Cakes -->
+
+      <!-- Category: Pastries -->
+      <div class="menu-category">
+        <h3>Pastries</h3>
+        <div class="menu-grid">
+
+          <!-- Menu item 5 -->
+          <div class="menu-card">
+            <div class="menu-card-header">
+              <h4>Almond Croissant</h4>
+              <span class="price">£3.20</span>
+            </div>
+            <p>Flaky, buttery layers filled with almond frangipane and topped with toasted flaked almonds.</p>
+            <div class="tags">
+              <span class="tag">Vegan</span>
+            </div>
+          </div>
+
+          <!-- Menu item 6 -->
+          <div class="menu-card">
+            <div class="menu-card-header">
+              <h4>Cinnamon Scroll</h4>
+              <span class="price">£2.90</span>
+            </div>
+            <p>Soft, pillowy dough swirled with cinnamon and brown sugar, finished with a light vanilla glaze.</p>
+            <div class="tags">
+              <span class="tag">Vegan</span>
+              <span class="tag">NF</span>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- end Pastries -->
+
+      <!-- Tag key at the bottom of the menu -->
+      <p style="text-align:center; font-size:0.85rem; color:#888; margin-top:8px;">
+        GF = Gluten-Free &nbsp;|&nbsp; NF = Nut-Free &nbsp;|&nbsp; All items are vegan
+      </p>
+
+    </div><!-- end .container -->
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       OUR STORY SECTION
+       Replace the placeholder text and photo
+       with your own when ready.
+  ════════════════════════════════════════ -->
+  <section id="story">
+    <div class="container">
+      <h2 class="section-title">Our Story</h2>
+      <div class="story-layout">
+
+        <!-- Placeholder photo from Unsplash — swap src for your own image -->
+        <img
+          class="story-photo"
+          src="https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=480&auto=format&fit=crop&q=80"
+          alt="Baker at Sprout and Crumb"
+        />
+
+        <div class="story-text">
+          <p>
+            Sprout &amp; Crumb started at my kitchen table with a bag of flour, a dog-eared notebook,
+            and a stubborn belief that plant-based baking could taste every bit as good as the real thing.
+          </p>
+          <p>
+            After years of experimenting — and plenty of flat loaves along the way — I found that the
+            secret isn't substitution. It's understanding what each ingredient does and letting plants
+            do it better. Every item on our menu is baked fresh, without any animal products, and without
+            any compromise on flavour.
+          </p>
+          <p>
+            We're a small bakery and proud of it. We know our regulars by name, we change our specials
+            with the seasons, and we mean it when we say everything is made with care.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       PRE-ORDER FORM SECTION
+       The form checks all fields before showing
+       the thank-you message. Nothing is sent
+       anywhere — this is a demo / prototype.
+  ════════════════════════════════════════ -->
+  <section id="preorder">
+    <div class="container">
+      <h2 class="section-title">Pre-Order</h2>
+      <p style="text-align:center; margin-bottom:32px; color:var(--text-muted);">
+        We bake to order. Please give us at least <strong>48 hours' notice</strong>.
+        Collection is available <strong>Tuesday – Saturday</strong>.
+      </p>
+
+      <!-- The form itself. id="order-form" lets JavaScript find it easily. -->
+      <form id="order-form" novalidate>
+        <!-- novalidate stops the browser's built-in popups; we do our own checks below -->
+
+        <div class="form-grid">
+
+          <!-- Full name -->
+          <div class="form-group" id="group-name">
+            <label for="name">Full name <span class="required">*</span></label>
+            <input type="text" id="name" placeholder="e.g. Jane Smith" />
+            <span class="error-msg" id="err-name">Please enter your full name.</span>
+          </div>
+
+          <!-- Email address -->
+          <div class="form-group" id="group-email">
+            <label for="email">Email address <span class="required">*</span></label>
+            <input type="email" id="email" placeholder="jane@example.com" />
+            <span class="error-msg" id="err-email">Please enter a valid email address.</span>
+          </div>
+
+          <!-- Phone number -->
+          <div class="form-group" id="group-phone">
+            <label for="phone">Phone number <span class="required">*</span></label>
+            <input type="tel" id="phone" placeholder="07700 900123" />
+            <span class="error-msg" id="err-phone">Please enter a valid phone number (numbers only, 10–15 digits).</span>
+          </div>
+
+          <!-- Quantity -->
+          <div class="form-group" id="group-qty">
+            <label for="qty">Quantity <span class="required">*</span></label>
+            <input type="number" id="qty" placeholder="1" min="1" max="12" />
+            <span class="error-msg" id="err-qty">Please enter a quantity between 1 and 12.</span>
+          </div>
+
+          <!-- Items wanted — spans both columns -->
+          <div class="form-group form-full" id="group-items">
+            <label for="items">Items wanted <span class="required">*</span></label>
+            <input type="text" id="items" placeholder="e.g. 1 Seeded Sourdough, 2 Cinnamon Scrolls" />
+            <span class="error-msg" id="err-items">Please tell us what you'd like to order.</span>
+          </div>
+
+          <!-- Collection date -->
+          <div class="form-group" id="group-date">
+            <label for="cdate">Collection date <span class="required">*</span></label>
+            <input type="date" id="cdate" />
+            <span class="error-msg" id="err-date">Please choose a Tuesday–Saturday at least 48 hours from today.</span>
+          </div>
+
+          <!-- Collection time -->
+          <div class="form-group" id="group-time">
+            <label for="ctime">Collection time <span class="required">*</span></label>
+            <input type="time" id="ctime" />
+            <span class="error-msg" id="err-time">Please choose a collection time.</span>
+          </div>
+
+          <!-- Dietary notes — optional, spans both columns -->
+          <div class="form-group form-full">
+            <label for="dietary">Dietary notes <span style="color:#888; font-weight:400;">(optional)</span></label>
+            <textarea id="dietary" rows="2" placeholder="e.g. severe nut allergy, gluten-free required"></textarea>
+          </div>
+
+          <!-- Personal message — optional, spans both columns -->
+          <div class="form-group form-full">
+            <label for="message">Personal message <span style="color:#888; font-weight:400;">(optional)</span></label>
+            <textarea id="message" rows="2" placeholder="e.g. Happy Birthday Sarah! — written on the cake"></textarea>
+          </div>
+
+          <!-- Submit button — spans both columns -->
+          <div class="form-full">
+            <button type="submit" class="btn btn-submit">Place Pre-Order</button>
+          </div>
+
+        </div><!-- end .form-grid -->
+      </form>
+
+      <!-- Thank-you message — hidden until the form passes all checks -->
+      <div id="thank-you">
+        <h3>Thank you for your order! 🌱</h3>
+        <p>We've received your pre-order request and will be in touch shortly to confirm.</p>
+        <p style="margin-top:10px; color:var(--text-muted); font-size:0.9rem;">
+          Remember to collect on your chosen date — we'll have it fresh and ready for you.
+        </p>
+      </div>
+
+    </div><!-- end .container -->
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════ -->
+  <footer>
+    <div class="container">
+      <strong>Sprout &amp; Crumb</strong>
+      <p>Open Tuesday – Saturday &nbsp;|&nbsp; Hours TBC</p>
+      <p>Orders require at least 48 hours' notice &nbsp;|&nbsp; Collection only</p>
+      <p class="footer-note">&copy; 2025 Sprout &amp; Crumb. All rights reserved.</p>
+    </div>
+  </footer>
+
+
+  <!-- ═══════════════════════════════════════
+       JAVASCRIPT — FORM VALIDATION
+       This code runs in the browser when the
+       customer clicks "Place Pre-Order".
+       It checks every required field and shows
+       a red message if something is wrong.
+       If everything is fine, it hides the form
+       and shows the thank-you box instead.
+  ════════════════════════════════════════ -->
+  <script>
+
+    // ── Helper: mark a field group as having an error ──────────────────────
+    // groupId  = the id of the div wrapping the label + input + error message
+    // hasError = true to show the error, false to clear it
+    function setError(groupId, hasError) {
+      var group = document.getElementById(groupId);
+      if (hasError) {
+        group.classList.add('has-error');
+      } else {
+        group.classList.remove('has-error');
+      }
+      return hasError; // return so we can count errors easily
+    }
+
+    // ── Helper: check whether a date is a Tuesday–Saturday ─────────────────
+    // JavaScript's getDay() returns 0=Sun, 1=Mon, 2=Tue, 3=Wed,
+    //   4=Thu, 5=Fri, 6=Sat
+    function isTueSat(dateObj) {
+      var day = dateObj.getDay();
+      return day >= 2 && day <= 6; // 2, 3, 4, 5, 6
+    }
+
+    // ── Main validation function — runs when the form is submitted ──────────
+    document.getElementById('order-form').addEventListener('submit', function(event) {
+
+      // Stop the browser from trying to send the form to a server
+      event.preventDefault();
+
+      // Read the values the customer typed in
+      var name  = document.getElementById('name').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var phone = document.getElementById('phone').value.trim();
+      var items = document.getElementById('items').value.trim();
+      var qty   = parseInt(document.getElementById('qty').value, 10);
+      var cdate = document.getElementById('cdate').value; // "YYYY-MM-DD"
+      var ctime = document.getElementById('ctime').value; // "HH:MM"
+
+      // Count how many fields fail — we'll check this at the end
+      var errors = 0;
+
+      // ── Name: must not be empty ─────────────────────────────────────────
+      errors += setError('group-name', name === '') ? 1 : 0;
+
+      // ── Email: must contain "@" and at least one "." after it ───────────
+      var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      errors += setError('group-email', !emailOk) ? 1 : 0;
+
+      // ── Phone: digits only, 10–15 characters ───────────────────────────
+      var phoneOk = /^\d{10,15}$/.test(phone.replace(/[\s\-\(\)]/g, ''));
+      errors += setError('group-phone', !phoneOk) ? 1 : 0;
+
+      // ── Items: must not be empty ────────────────────────────────────────
+      errors += setError('group-items', items === '') ? 1 : 0;
+
+      // ── Quantity: must be a number between 1 and 12 ────────────────────
+      var qtyOk = !isNaN(qty) && qty >= 1 && qty <= 12;
+      errors += setError('group-qty', !qtyOk) ? 1 : 0;
+
+      // ── Collection date ─────────────────────────────────────────────────
+      // Rules: must be filled in, must be Tue–Sat, must be 48+ hours away
+      var dateOk = false;
+      if (cdate) {
+        // Build a Date object from the chosen date string
+        // We add T12:00 to avoid timezone-shift issues with date-only strings
+        var chosen = new Date(cdate + 'T12:00:00');
+        var now    = new Date();
+
+        // 48 hours in milliseconds = 48 × 60 × 60 × 1000
+        var fortyEightHoursMs = 48 * 60 * 60 * 1000;
+        var farEnough = (chosen - now) >= fortyEightHoursMs;
+
+        dateOk = isTueSat(chosen) && farEnough;
+      }
+      errors += setError('group-date', !dateOk) ? 1 : 0;
+
+      // ── Collection time: must not be empty ─────────────────────────────
+      errors += setError('group-time', ctime === '') ? 1 : 0;
+
+      // ── If no errors, hide the form and show the thank-you message ──────
+      if (errors === 0) {
+        document.getElementById('order-form').style.display = 'none';
+        document.getElementById('thank-you').style.display  = 'block';
+
+        // Scroll smoothly up to the thank-you box so the customer sees it
+        document.getElementById('thank-you').scrollIntoView({ behavior: 'smooth' });
+      }
+
+    });
+
+  </script>
+
+</body>
+</html>
